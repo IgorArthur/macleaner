@@ -1,40 +1,59 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
-*/
 package cmd
 
 import (
 	"fmt"
+	"os/exec"
 
 	"github.com/spf13/cobra"
 )
 
-// doctorCmd represents the doctor command
 var doctorCmd = &cobra.Command{
 	Use:   "doctor",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Diagnose Docker-related disk usage on macOS",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		fmt.Print("MaCleaner Doctor\n")
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("doctor called")
+		checkDockerRunning()
+		explainSystemData()
+		explainLimitations()
+
+		return nil
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(doctorCmd)
+}
 
-	// Here you will define your flags and configuration settings.
+func checkDockerRunning() {
+	cmd := exec.Command("pgrep", "-f", "Docker Desktop")
+	if err := cmd.Run(); err == nil {
+		fmt.Println("✔ Docker Desktop is running")
+	} else {
+		fmt.Println("ℹ Docker Desktop is not running")
+	}
+}
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// doctorCmd.PersistentFlags().String("foo", "", "A help for foo")
+func explainSystemData() {
+	fmt.Println("\nWhy 'System Data' grows with Docker:")
+	fmt.Println("- Docker stores container layers and volumes in a hidden Linux VM")
+	fmt.Println("- macOS reports this as 'System Data'")
+	fmt.Println("- Deleting Finder-visible files does not affect this usage")
+}
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// doctorCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+func explainLimitations() {
+	fmt.Println("\nWhat this tool CAN clean:")
+	fmt.Println("- Docker Desktop caches")
+	fmt.Println("- Logs and application support files")
+	fmt.Println("- Group containers left after image rebuilds")
+
+	fmt.Println("\nWhat this tool CANNOT clean:")
+	fmt.Println("- Docker VM disk images")
+	fmt.Println("- APFS snapshots")
+	fmt.Println("- Files protected by SIP")
+
+	fmt.Println("\nRecommended actions:")
+	fmt.Println("- Run: docker system prune -a")
+	fmt.Println("- Restart Docker Desktop")
+	fmt.Println("- Quit Docker when not in use")
 }
