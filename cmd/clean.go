@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/igorarthur/macleaner/internal/fs"
 	"github.com/igorarthur/macleaner/internal/paths"
@@ -27,7 +28,10 @@ var cleanCmd = &cobra.Command{
 			}
 		}
 
-		for _, p := range paths.DockerPaths {
+		goos := runtime.GOOS
+		DockerPaths := paths.DockerPaths[goos]
+
+		for _, p := range DockerPaths {
 			expanded, err := fs.ExpandPath(p)
 			if err != nil {
 				continue
