@@ -16,6 +16,11 @@ var scanCmd = &cobra.Command{
 		goos := runtime.GOOS
 		DockerPaths := paths.DockerPaths[goos]
 
+		if len(DockerPaths) == 0 {
+			fmt.Printf("No Docker paths found in your %s system\n", goos)
+			return nil
+		}
+
 		for _, p := range DockerPaths {
 			expanded, err := fs.ExpandPath(p)
 			if err != nil {
