@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"runtime"
 
 	"github.com/igorarthur/macleaner/internal/fs"
@@ -15,11 +16,7 @@ var scanCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		goos := runtime.GOOS
 		DockerPaths := paths.DockerPaths[goos]
-
-		if len(DockerPaths) == 0 {
-			fmt.Printf("No Docker paths found in your %s system\n", goos)
-			return nil
-		}
+		var found int
 
 		for _, p := range DockerPaths {
 			expanded, err := fs.ExpandPath(p)
@@ -27,12 +24,21 @@ var scanCmd = &cobra.Command{
 				continue
 			}
 
+			if _, err := os.Stat(expanded); os.IsNotExist(err) {
+				continue
+			}
+			found++
+
 			size, err := fs.DirSize(expanded)
 			if err != nil {
 				continue
 			}
 
 			fmt.Printf("%s → %.2f GB\n", expanded, float64(size)/1024/1024/1024)
+		}
+
+		if found == 0 {
+			fmt.Printf("No Docker paths found in your %s system\n", goos)
 		}
 		return nil
 	},
