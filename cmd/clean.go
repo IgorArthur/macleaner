@@ -30,15 +30,14 @@ var cleanCmd = &cobra.Command{
 
 		goos := runtime.GOOS
 		DockerPaths := paths.DockerPaths[goos]
-
-		if len(DockerPaths) == 0 {
-			fmt.Printf("No Docker paths found in your %s system\n", goos)
-			return nil
-		}
+		var found int
 
 		for _, p := range DockerPaths {
 			expanded, err := fs.ExpandPath(p)
 			if err != nil {
+			}
+
+			if _, err := os.Stat(expanded); os.IsNotExist(err) {
 				continue
 			}
 
@@ -51,8 +50,13 @@ var cleanCmd = &cobra.Command{
 			if err != nil {
 				fmt.Println("Failed:", expanded, err)
 			} else {
+				found++
 				fmt.Println("Removed:", expanded)
 			}
+		}
+
+		if found == 0 {
+			fmt.Printf("No Docker paths found in your %s system\n", goos)
 		}
 
 		return nil
