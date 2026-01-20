@@ -12,7 +12,7 @@ func ExpandPath(path string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return filepath.Join(home, path[1:]), nil
+		path = filepath.Join(home, path[1:])
 	}
-	return path, nil
+	return os.ExpandEnv(path), nil
 }

@@ -9,7 +9,7 @@ import (
 
 var doctorCmd = &cobra.Command{
 	Use:   "doctor",
-	Short: "Diagnose Docker-related disk usage on macOS",
+	Short: "Diagnose Docker-related disk usage on your system",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Print("MaCleaner Doctor\n")
 
@@ -35,10 +35,24 @@ func checkDockerRunning() {
 }
 
 func explainSystemData() {
-	fmt.Println("\nWhy 'System Data' grows with Docker:")
-	fmt.Println("- Docker stores container layers and volumes in a hidden Linux VM")
-	fmt.Println("- macOS reports this as 'System Data'")
-	fmt.Println("- Deleting Finder-visible files does not affect this usage")
+	fmt.Println("\nWhy Docker storage grows across different OSs:")
+
+	fmt.Println("\n[macOS]")
+	fmt.Println("- Docker Desktop runs a hidden Linux VM (Docker.raw).")
+	fmt.Println("- macOS 'System Data' includes this massive VM file.")
+	fmt.Println("- Deleting files in Finder won't shrink the VM disk image automatically.")
+
+	fmt.Println("\n[Windows]")
+	fmt.Println("- Docker typically uses WSL2 (Windows Subsystem for Linux).")
+	fmt.Println("- Data is stored in a virtual disk file (ext4.vhdx).")
+	fmt.Println("- This shows up as 'Other' or 'System' storage in Windows settings.")
+
+	fmt.Println("\n[Linux]")
+	fmt.Println("- Docker runs natively; there is no hidden VM.")
+	fmt.Println("- Data stays in /var/lib/docker.")
+	fmt.Println("- While it's not 'System Data,' it can fill the root partition (/) quickly.")
+
+	fmt.Println("\nNote: Use 'docker system prune' on any OS to reclaim this space.")
 }
 
 func explainLimitations() {

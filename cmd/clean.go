@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/igorarthur/macleaner/internal/fs"
 	"github.com/igorarthur/macleaner/internal/paths"
@@ -27,9 +28,16 @@ var cleanCmd = &cobra.Command{
 			}
 		}
 
-		for _, p := range paths.DockerPaths {
+		goos := runtime.GOOS
+		DockerPaths := paths.DockerPaths[goos]
+		var found int
+
+		for _, p := range DockerPaths {
 			expanded, err := fs.ExpandPath(p)
 			if err != nil {
+			}
+
+			if _, err := os.Stat(expanded); os.IsNotExist(err) {
 				continue
 			}
 
@@ -42,8 +50,13 @@ var cleanCmd = &cobra.Command{
 			if err != nil {
 				fmt.Println("Failed:", expanded, err)
 			} else {
+				found++
 				fmt.Println("Removed:", expanded)
 			}
+		}
+
+		if found == 0 {
+			fmt.Printf("No Docker paths found in your %s system\n", goos)
 		}
 
 		return nil

@@ -1,6 +1,6 @@
 ### MaCleaner
 
-MaCleaner is a command-line tool for cleaning up Docker-related files on macOS.
+MaCleaner is a command-line tool for cleaning up Docker-related files on macOS, Linux and Windows systems.
 
 ## Installation
 
