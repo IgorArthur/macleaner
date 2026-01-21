@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"runtime"
 
 	"github.com/igorarthur/macleaner/internal/fs"
@@ -49,21 +50,21 @@ func Clean(fs fs.FileSystem, dryRun bool, assumeYes bool) error {
 
 		if dryRun {
 			found++
-			fmt.Println("[dry-run]", expanded)
+			fmt.Fprintln(os.Stdout, "[dry-run]", expanded)
 			continue
 		}
 
 		err = fs.RemoveAll(expanded)
 		if err != nil {
-			fmt.Println("Failed:", expanded, err)
+			fmt.Fprintln(os.Stdout, "Failed:", expanded, err)
 		} else {
 			found++
-			fmt.Println("Removed:", expanded)
+			fmt.Fprintln(os.Stdout, "Removed:", expanded)
 		}
 	}
 
 	if found == 0 {
-		fmt.Printf("No Docker paths found in your %s system\n", goos)
+		fmt.Fprintln(os.Stdout, "No Docker paths found in your %s system\n", goos)
 	}
 
 	return nil
