@@ -16,11 +16,7 @@ var scanCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		realFS := &fs.RealFS{}
 
-		err := scan(realFS)
-		if err != nil {
-			return err
-		}
-		return nil
+		return scan(realFS)
 	},
 }
 

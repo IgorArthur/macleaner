@@ -34,3 +34,12 @@ func (RealFS) DirSize(path string) (int64, error) {
 
 	return size, err
 }
+
+func (RealFS) RemoveAll(path string) error {
+	return os.RemoveAll(path)
+}
+
+func (RealFS) Exists(path string) bool {
+	_, err := os.Stat(path)
+	return !os.IsNotExist(err)
+}

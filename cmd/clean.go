@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"runtime"
 
 	"github.com/igorarthur/macleaner/internal/fs"
@@ -19,15 +18,11 @@ var cleanCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		realFS := &fs.RealFS{}
 
-		err := clean(realFS)
-		if err != nil {
-			return err
-		}
-		return nil
+		return Clean(realFS, dryRun, assumeYes)
 	},
 }
 
-func clean(fs fs.FileSystem) error {
+func Clean(fs fs.FileSystem, dryRun bool, assumeYes bool) error {
 	if !assumeYes {
 		fmt.Println("This will permanently delete Docker files.")
 		fmt.Print("Continue? [y/N]: ")
@@ -48,16 +43,17 @@ func clean(fs fs.FileSystem) error {
 		if err != nil {
 		}
 
-		if _, err := os.Stat(expanded); os.IsNotExist(err) {
+		if !fs.Exists(expanded) {
 			continue
 		}
 
 		if dryRun {
+			found++
 			fmt.Println("[dry-run]", expanded)
 			continue
 		}
 
-		err = os.RemoveAll(expanded)
+		err = fs.RemoveAll(expanded)
 		if err != nil {
 			fmt.Println("Failed:", expanded, err)
 		} else {
