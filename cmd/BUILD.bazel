@@ -1,0 +1,18 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "cmd",
+    srcs = [
+        "clean.go",
+        "doctor.go",
+        "root.go",
+        "scan.go",
+    ],
+    importpath = "github.com/igorarthur/macleaner/cmd",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//internal/fs",
+        "//internal/paths",
+        "@com_github_spf13_cobra//:cobra",
+    ],
+)

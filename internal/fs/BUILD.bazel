@@ -1,0 +1,11 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "fs",
+    srcs = [
+        "expand.go",
+        "size.go",
+    ],
+    importpath = "github.com/igorarthur/macleaner/internal/fs",
+    visibility = ["//:__subpackages__"],
+)

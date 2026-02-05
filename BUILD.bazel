@@ -1,0 +1,29 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+load("@gazelle//:def.bzl", "gazelle")
+
+# gazelle:prefix github.com/igorarthur/macleaner
+gazelle(name = "gazelle")
+
+gazelle(
+    name = "gazelle-update-repos",
+    args = [
+        "-from_file=go.mod",
+        "-to_macro=deps.bzl%go_dependencies",
+        "-prune",
+    ],
+    command = "update-repos",
+)
+
+go_library(
+    name = "macleaner_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/igorarthur/macleaner",
+    visibility = ["//visibility:private"],
+    deps = ["//cmd"],
+)
+
+go_binary(
+    name = "macleaner",
+    embed = [":macleaner_lib"],
+    visibility = ["//visibility:public"],
+)

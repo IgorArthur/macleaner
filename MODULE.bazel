@@ -1,0 +1,20 @@
+module(
+    name = "macleaner",
+    version = "1.0.0",
+)
+
+# 1. Fetch rules_go and gazelle
+bazel_dep(name = "rules_go", version = "0.46.0")
+bazel_dep(name = "gazelle", version = "0.35.0")
+
+# 2. Configure the Go SDK
+go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
+go_sdk.download(version = "1.22.0")  # Or your preferred Go version
+
+# 3. Configure Go dependencies from go.mod
+go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
+go_deps.from_file(go_mod = "//:go.mod")
+use_repo(
+    go_deps,
+    "com_github_spf13_cobra",
+)
